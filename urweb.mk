@@ -3,7 +3,7 @@ ifndef PROJ
 	$(error Need to define PROJ)
 endif
 
-ifeq ($(V),1)
+ifeq ($(V),yes)
 Q=
 else
 Q=@
@@ -19,16 +19,16 @@ SQL=$(PROJ).sql
 COMPFLAGS+= -output $(OUT)
 
 ifeq ($(DBMS),sqlite)
-DBNAME=$(PROJ).db
+DBNAME?=$(PROJ).db
 else ifeq ($(DBMS),postgres)
-DBNAME=ur_$(PROJ)
+DBNAME?=ur_$(PROJ)
 else ifeq ($(DBMS),mysql)
-DBNAME=ur_$(PROJ)
+DBNAME?=ur_$(PROJ)
 endif
 
 ifneq ($(DBMS),none)
 COMPFLAGS+= -dbms $(DBMS) -sql $(SQL)
-COMPFLAGS+= -db "dbname=$(DBNAME)"
+COMPFLAGS+= -db "dbname=$(DBNAME) $(DBOPTS)"
 endif
 
 ifeq ($(DEBUG),yes)
