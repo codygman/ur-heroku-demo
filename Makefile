@@ -1,4 +1,4 @@
-PROJ=login
+PROJ=comet
 DBMS=postgres
 STATIC=yes
 

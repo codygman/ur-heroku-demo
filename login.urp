@@ -1,4 +1,0 @@
-rewrite url Login/main
-link -L/usr/local/lib
-
-login
