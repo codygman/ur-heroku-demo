@@ -37,12 +37,17 @@ endif
 ifeq ($(STATIC),yes)
 COMPFLAGS+= -static
 endif
+ifeq ($(TC),yes)
+COMPFLAGS+= -tc
+endif
 
 all: build
 
 build: createdb
 
 createdb: compile
+ifneq ($(TC),yes)
+
 	$(E) Creating database...
 ifeq ($(DBMS),sqlite)
 	$(Q)sqlite3 $(DBNAME) < $(SQL)
@@ -55,6 +60,8 @@ else ifeq ($(DBMS),mysql)
 	-$(E) "drop database $(DBNAME);" | mysql
 	-$(E) "create database $(DBNAME);" | mysql
 	mysql $(DBNAME) < $(SQL)
+endif
+
 endif
 
 compile:
