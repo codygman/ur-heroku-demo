@@ -1,1 +1,1 @@
-web: ./comet.exe -t 1 -p $PORT
+web: ./comet.exe -t 1 -p $PORT\n

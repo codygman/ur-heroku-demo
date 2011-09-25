@@ -69,27 +69,5 @@ compile:
 	$(UR) $(COMPFLAGS) $(PROJ)
 	$(E) Done compiling.
 
-heroku:
-	$(E) Creating Heroku files.
-	$(E) You will need bundler installed!
-	$(E) \'gem install bundler\' if you do not have it
-	$(Q)touch Gemfile
-	$(Q)bundle install && bundle show
-	$(E) "web: ./$(OUT) -t 8 -p" '$$PORT' > Procfile
-	$(E) Done. Now commit the Gemfile, Gemfile.lock and Procfile files
-
-help:
-	$(E) Simply running 'make' will compile your application
-	$(E) and create a database for it based on the DBMS variable.
-	$(E) Running 'heroku' will create some files you can use to
-	$(E) start your app using 'foreman' and put it on Heroku.
-	$(E) 
-	$(E) Your .urp file should not need to mention any database
-	$(E) options, and can be as simple as -
-	$(E) 
-	$(E) rewrite url /App/main
-	$(E) 
-	$(E) app
-
 clean:
 	rm -f *.exe *.db* *~ *.sql

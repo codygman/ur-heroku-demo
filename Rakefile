@@ -1,6 +1,39 @@
 require 'pg'
 
-task "urweb-pq-con" do
+task "default" do
+  puts "TODO HELP FIXME"
+end
+
+task "init-heroku-files" do
+
+  puts "Creating Procfile..."
+  File.open('Procfile','w') do |f|
+    f.write('web: ./app.exe -t 1 -p $PORT\n')
+  end
+
+  puts "Creating Gemfile..."
+  File.open('Gemfile','w') do |f|
+    f.write("source :rubygems\n")
+    f.write("gem 'pg', '0.11.0'\n")
+  end
+
+  `bundle install`
+  `bundle show`
+
+  puts
+  puts "Done."
+  puts
+  puts "Make sure you modify Procfile to launch your own .exe."
+  puts "You can test that by running:"
+  puts
+  puts "    $ foreman start"
+  puts
+  puts "Afterwords, be sure to commit your Gemfile, Gemfile.lock"
+  puts "and your Procfile before pushing to Heroku"
+  puts
+end
+
+task "get-urweb-pq-con" do
   puts "Looking for DATABASE_URL..."
   out = `heroku config -s`
 
@@ -24,7 +57,7 @@ task "urweb-pq-con" do
   end
 end
 
-task "db-reinit", [:sqlfile] do |t, args|
+task "heroku-db-init", [:sqlfile] do |t, args|
   puts "Reading #{args.sqlfile}"
   schema = IO.read(args.sqlfile)
 
