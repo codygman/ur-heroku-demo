@@ -1,5 +1,29 @@
 require 'pg'
 
+task "urweb-pq-con" do
+  puts "Looking for DATABASE_URL..."
+  out = `heroku config -s`
+
+  out.split(/\n/).each do |o|
+    k,v = o.split(/=/,2)
+    next unless k == "DATABASE_URL"
+
+    res = v.scan(/postgres:\/\/(.*):(.*)@(.*)\/(.*)/)[0]
+    if res == nil
+      puts "Couldn't parse DATABASE_URL properly!"
+      exit
+    end
+
+    user, pass, host, dbname = res
+    puts "Done. Your URWEB_PQ_CON variable should be set with:"
+    puts 
+    puts "    $ heroku config:add URWEB_PQ_CON=\"dbname=#{dbname} user=#{user} password=#{pass} host=#{host}\""
+    puts 
+
+    break
+  end
+end
+
 task "db-reinit", [:sqlfile] do |t, args|
   puts "Reading #{args.sqlfile}"
   schema = IO.read(args.sqlfile)
@@ -18,10 +42,20 @@ task "db-reinit", [:sqlfile] do |t, args|
 
   puts "Connecting to database '#{dbname}' specified by URWEB_PQ_CON (value is '#{dbcon}')"
   conn = PGconn.connect(dbcon)
-  
-  puts "Now dropping old database schema and its data..."
-  conn.exec("DROP SCHEMA IF EXISTS public CASCADE;")
-  conn.exec("CREATE SCHEMA public;")
-  puts "Now creating schema..."
+
+  puts "Now dropping all old Ur/Web tables/sequences..."
+  tabls = conn.exec("select tablename from pg_tables where tablename not like 'pg_%' and tablename not like 'sql_%' and tablename like 'uw_%';")
+  tabls.each do |r|
+    puts "Dropping table '#{r['tablename']}'"
+    conn.exec("drop table #{r['tablename']};")
+  end
+
+  seqs  = conn.exec("select c.relname from pg_class c where c.relkind ='S' and c.relname like 'uw_%';")
+  seqs.each do |r|
+    puts "Dropping sequence '#{r['relname']}'"
+    conn.exec("drop sequence #{r['relname']};")
+  end
+
+  puts "Now creating new schema..."
   conn.exec(schema)
 end
