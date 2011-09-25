@@ -31,5 +31,6 @@ fun action () =
 
 fun main () =
     return <xml><body>
+      <p>GET READY TO RUMBLE!</p>
       <form><submit value="Go" action={action}/></form>
     </body></xml>
